@@ -29,20 +29,20 @@ defmodule Datos do
     # 1. Lotes invalidos (2 por cada motivo)
     lotes_invalidos = [
       # Motivo 1: :confeccionista desconocido
-      %{confeccionista: "C99", linea: "L1", dia: 1, prendas: 80, defectos: 1.0},
-      %{confeccionista: "C88", linea: "L2", dia: 2, prendas: 60, defectos: 2.0},
+      %{codigo_confeccionista: "C99", linea: "L1", dia: 1, prendas: 80, defectos: 1.0},
+      %{codigo_confeccionista: "C88", linea: "L2", dia: 2, prendas: 60, defectos: 2.0},
       # Motivo 2: :linea desconocida
-      %{confeccionista: "C01", linea: "LX", dia: 1, prendas: 70, defectos: 1.5},
-      %{confeccionista: "C02", linea: "LZ", dia: 3, prendas: 50, defectos: 3.0},
+      %{codigo_confeccionista: "C01", linea: "LX", dia: 1, prendas: 70, defectos: 1.5},
+      %{codigo_confeccionista: "C02", linea: "LZ", dia: 3, prendas: 50, defectos: 3.0},
       # Motivo 3: :dia invalido
-      %{confeccionista: "C01", linea: "L1", dia: 0, prendas: 90, defectos: 0.0},
-      %{confeccionista: "C03", linea: "L3", dia: 7, prendas: 100, defectos: 4.0},
+      %{codigo_confeccionista: "C01", linea: "L1", dia: 0, prendas: 90, defectos: 0.0},
+      %{codigo_confeccionista: "C03", linea: "L3", dia: 7, prendas: 100, defectos: 4.0},
       # Motivo 4: :prendas fuera de rango
-      %{confeccionista: "C01", linea: "L1", dia: 2, prendas: 0, defectos: 1.0},
-      %{confeccionista: "C04", linea: "L4", dia: 4, prendas: 200, defectos: 2.0},
+      %{codigo_confeccionista: "C01", linea: "L1", dia: 2, prendas: 0, defectos: 1.0},
+      %{codigo_confeccionista: "C04", linea: "L4", dia: 4, prendas: 200, defectos: 2.0},
       # Motivo 5: :porcentaje invalido
-      %{confeccionista: "C02", linea: "L2", dia: 5, prendas: 110, defectos: -1.0},
-      %{confeccionista: "C05", linea: "L3", dia: 6, prendas: 85, defectos: 105.0}
+      %{codigo_confeccionista: "C02", linea: "L2", dia: 5, prendas: 110, defectos: -1.0},
+      %{codigo_confeccionista: "C05", linea: "L3", dia: 6, prendas: 85, defectos: 105.0}
     ]
 
     # 2. Lotes validos (80 lotes distribuidos en los 6 días)
@@ -52,7 +52,7 @@ defmodule Datos do
       lin = rem(i, 4) + 1
       dia = rem(i, 6) + 1
       %{
-      confeccionista: "C" <> String.pad_leading("#{conf}", 2, "0"),
+      codigo_confeccionista: "C" <> String.pad_leading("#{conf}", 2, "0"),
       linea: "L#{lin}",
       dia: dia,
       prendas: 50 + rem(i * 7, 100),
