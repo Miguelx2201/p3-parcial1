@@ -35,5 +35,22 @@ defmodule Reportes do
     end)}
     """)
   end
-  
+
+  def generar_reporte_r3(lotes) do
+    total_prendas_por_dia = Enum.group_by(lotes, fn lote -> lote.dia end, & &1.prendas)
+    |> Enum.map(fn {dia, prendas} ->
+      total_prendas = Enum.sum(prendas)
+      {dia, total_prendas, total_prendas >= 600}
+    end)
+    Util.mostrar_mensaje("""
+    REPORTE #3 - PRENDAS POR DIA
+    ============================
+    #{Enum.map_join(total_prendas_por_dia, "\n", fn {dia, total_prendas, cumple_objetivo} ->
+      "Dia: #{dia} - Total prendas: #{total_prendas} - Cumple objetivo: #{cumple_objetivo}"
+    end)}
+
+    ¿Algun dia se cumplio la meta? #{Enum.any?(total_prendas_por_dia, fn {_dia, total_prendas, cumple_objetivo} -> cumple_objetivo == true end)}
+    ¿Todos los dias se cumplio la meta? #{Enum.all?(total_prendas_por_dia, fn {_dia, total_prendas, cumple_objetivo} -> cumple_objetivo == true end)}
+    """)
+  end
 end
