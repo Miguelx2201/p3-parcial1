@@ -53,4 +53,28 @@ defmodule Reportes do
     ¿Todos los dias se cumplio la meta? #{Enum.all?(total_prendas_por_dia, fn {_dia, total_prendas, cumple_objetivo} -> cumple_objetivo == true end)}
     """)
   end
+
+  def generar_reporte_r4(lotes, confeccionistas) do
+    datos_confeccionistas =Enum.map(confeccionistas, fn {_codigo, confeccionista} ->
+      neto_semanal = Liquidacion.calcular_neto_semanal(lotes, confeccionista)
+      descuento_alquiler = Liquidacion.calcular_descuento_total_semanal(lotes, confeccionista)
+      bono_total = Liquidacion.calcular_bono_total_semanal(lotes, confeccionista.codigo)
+      valor_lotes = Liquidacion.filtrar_lotes_por_confeccionista(lotes, confeccionista.codigo)
+      |> Enum.map(&Liquidacion.calcular_valor_lote/1)
+      prendas = for dia <- 1..6 do
+        Liquidacion.calcular_prendas_por_dia(lotes, confeccionista.codigo, dia)
+      end
+      %{confeccionista: confeccionista.nombre, neto_semanal: neto_semanal, descuento_alquiler: descuento_alquiler, bono_total: bono_total, valor_lotes: valor_lotes, prendas: prendas}
+    end)
+    |> Enum.sort_by(& &1.neto_semanal, :desc)
+
+
+    Util.mostrar_mensaje("""
+    REPORTE #4 - LIQUIDACION SEMANAL CONFECCIONISTAS
+    ================================================
+    #{Enum.with_index(datos_confeccionistas, 1) |> Enum.map_join("\n", fn {%{confeccionista: nombre, neto_semanal: neto_semanal, descuento_alquiler: descuento_alquiler, bono_total: bono_total, valor_lotes: valor_lotes, prendas: prendas}, index} ->
+      "#{index}. Confeccionista: #{nombre} - Neto semanal: #{Float.round(neto_semanal, 2)} - Descuento alquiler: #{Float.round(descuento_alquiler, 2)} - Bono total: #{Float.round(bono_total, 2)} - Valor lotes: #{Enum.join(valor_lotes, " - ")} - Prendas por dia: #{Enum.join(prendas, " - ")}"
+    end)}
+    """)
+  end
 end
