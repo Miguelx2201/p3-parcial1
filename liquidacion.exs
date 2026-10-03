@@ -16,7 +16,7 @@ defmodule Liquidacion do
 
   #Funciones para determinar si un confeccionista merece tener el bono de productividad diaria
 
-  def merece_bono_diario?(lotes, codigo_confeccionista, dia) do
+  def validar_merece_bono_diario?(lotes, codigo_confeccionista, dia) do
     total_prendas = calcular_prendas_diarias(lotes, codigo_confeccionista, dia)
     total_prendas >= 120
   end
@@ -37,7 +37,7 @@ defmodule Liquidacion do
 
   def generar_lista_bonos_diarios_semana(lotes, codigo_confeccionista) do
     for dia <- 1..6 do
-      if merece_bono_diario?(lotes, codigo_confeccionista, dia) do
+      if validar_merece_bono_diario?(lotes, codigo_confeccionista, dia) do
         18_000
       else
         0
@@ -48,5 +48,28 @@ defmodule Liquidacion do
   def calcular_bono_total_semanal(lotes, codigo_confeccionista) do
     lista_bonos = generar_lista_bonos_diarios_semana(lotes, codigo_confeccionista)
     Enum.sum(lista_bonos)
+  end
+
+  def validar_confeccionista_alquila_maquina?(confeccionista) do
+    confeccionista.alquiler
+  end
+
+  def generar_lista_descuentos_alquiler_semanal(lotes, confeccionista) do
+    if validar_confeccionista_alquila_maquina?(confeccionista) do
+      for dia <- 1..6 do
+        lotes_del_dia = filtrar_lotes_diarios_confeccionista(lotes, confeccionista.codigo, dia)
+        if Enum.any?(lotes_del_dia) do
+          15_000
+        else
+          0
+        end
+      end
+    else
+      [0,0,0,0,0,0]
+    end
+  end
+  def calcular_descuento_total_semanal(lotes, confeccionista) do
+    lista_descuentos = generar_lista_descuentos_alquiler_semanal(lotes, confeccionista)
+    Enum.sum(lista_descuentos)
   end
 end
