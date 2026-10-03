@@ -60,7 +60,7 @@ defmodule Datos do
       }
     end
 
-    lotes_complete = lotes_invalidos ++ lotes_validos
+    lotes_completos=[lotes_validos|lotes_invalidos]
   end
 
 end
