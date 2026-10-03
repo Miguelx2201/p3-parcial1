@@ -72,4 +72,17 @@ defmodule Liquidacion do
     lista_descuentos = generar_lista_descuentos_alquiler_semanal(lotes, confeccionista)
     Enum.sum(lista_descuentos)
   end
+
+  def calcular_total_semanal(lotes, confeccionista) do
+    filtrar_lotes_por_confeccionista(lotes, confeccionista.codigo)
+    |> Enum.map(&calcular_valor_lote/1)
+    |> Enum.sum()
+  end
+
+  def calcular_neto_semanal(lotes, confeccionista) do
+    total_semanal = calcular_total_semanal(lotes, confeccionista)
+    bono_total = calcular_bono_total_semanal(lotes, confeccionista.codigo)
+    descuento_total = calcular_descuento_total_semanal(lotes, confeccionista)
+    total_semanal + bono_total - descuento_total
+  end
 end
