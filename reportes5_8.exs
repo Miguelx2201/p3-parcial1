@@ -171,7 +171,7 @@ prendas entre quienes tengan al menos 3 lotes válidos.
 @doc """
 R7. Total que debe pagar el taller durante la semana y costo promedio pagado
 por prenda válida (total pagado / total de prendas válidas). Si no hay prendas válidas,
-indica que el promedio no puede calcularse[cite: 16].
+indica que el promedio no puede calcularse.
 """
 def generar_reporte_7(lotes_validos, mapa_confeccionistas) do
   total_pagado = calcular_total_pagado_taller(lotes_validos, mapa_confeccionistas)
@@ -211,5 +211,58 @@ defp calcular_y_formatear_promedio(total_pagado, total_prendas) do
   "Costo promedio por prenda válida: $#{Util.formatear_moneda(promedio)}"
 end
 
+@doc """
+R8: Confeccionistas que elaboraron al menos un lote válido en todas las líneas de producción.
+Si no hay ninguno, debe indicarse.
+"""
+def generar_reporte_8(lotes_validos, mapa_confeccionistas, mapa_lineas) do
+  lineas_totales = Map.keys(mapa_lineas)
+
+  resultado =
+    lotes_validos
+    |> Enum.group_by(fn l -> l.confeccionista end)
+    |> filtrar_confeccionistas_todas_las_lineas(lineas_totales)
+    |> formatear_resultado_r8(mapa_confeccionistas)
+
+  "\nR8. Confeccionistas con lotes válidos en todas las líneas\n#{resultado}"
+end
+
+# Funciones auxiliares para el reporte 8
+
+@doc """
+Filtra los confeccionistas que hayan registrado al menos un lote en cada línea de producción
+"""
+defp filtrar_confeccionistas_todas_las_lineas(lotes_por_conf, lineas_totales) do
+  Enum.filter(lotes_por_conf, fn {_cod, lotes} ->
+    trabajo_en_todas_las_lineas?(lotes, lineas_totales)
+  end)
+end
+
+@doc """
+Verifica si en la lista de lotes de un confeccionista están presentes todas las líneas registradas
+"""
+defp trabajo_en_todas_las_lineas?(lotes, lineas_totales) do
+  lineas_trabajadas = Enum.map(lotes, fn l -> l.linea end)
+
+  Enum.all?(lineas_totales, fn linea ->
+    linea in lineas_trabajadas
+  end)
+end
+
+@doc """
+Formatea la lista de confeccionistas que cumplieron la condición o indica que no hubo ninguno[cite: 17]
+"""
+defp formatear_resultado_r8([], _mapa_confeccionistas) do
+  "Ningún confeccionista elaboró lotes válidos en todas las líneas de producción."
+end
+
+defp formatear_resultado_r8(confeccionistas_cumplen, mapa_confeccionistas) do
+  Enum.map_join(confeccionistas_cumplen, "\n", fn {cod, _lotes} ->
+    datos_conf = Map.get(mapa_confeccionistas, cod, %{})
+    nombre = Map.get(datos_conf, :nombre, cod)
+
+    "Confeccionista: #{nombre} (#{cod})"
+  end)
+end
 
 end
