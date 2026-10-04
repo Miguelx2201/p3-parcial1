@@ -1,3 +1,5 @@
+Code.require_file("liquidacion.exs", __DIR__)
+alias Liquidacion
 defmodule Util do
   @moduledoc """
   Módulo de utilidades e interacción con el usuario (I/O).
