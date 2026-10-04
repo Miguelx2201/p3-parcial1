@@ -4,7 +4,7 @@ R5: muestra el confeccionista que produjo más prendas cada día; si hay empate,
 todos. Los días sin lotes válidos se indican como tales. Al final se informa quién
 ocupó el primer lugar más días y cuántos; si hay empate, se incluyen todos los empatados.
 """
-def reporte_5(lotes_validos, mapa_confeccionistas) do
+def generar_reporte_5(lotes_validos, mapa_confeccionistas) do
     encabezado = "\nR5. Confeccionista(s) con mas prendas por día:"
 
     resultados_dias =
@@ -104,7 +104,7 @@ def reporte_5(lotes_validos, mapa_confeccionistas) do
 R6: Confeccionista con mejor calidad: menor porcentaje de defectos ponderado por
 prendas entre quienes tengan al menos 3 lotes válidos.
 """
-  def reporte_6(lotes_validos, mapa_confeccionistas) do
+  def generar_reporte_6(lotes_validos, mapa_confeccionistas) do
     resultado =
       lotes_validos
       |> Enum.group_by(fn l -> l.confeccionista end)
@@ -167,6 +167,49 @@ prendas entre quienes tengan al menos 3 lotes válidos.
       "Confeccionista: #{nombre} (#{cod})\nPorcentaje ponderado de defectos: #{pct}%\nLotes válidos: #{num_lotes} | Total prendas: #{prendas}"
     end)
   end
+
+@doc """
+R7. Total que debe pagar el taller durante la semana y costo promedio pagado
+por prenda válida (total pagado / total de prendas válidas). Si no hay prendas válidas,
+indica que el promedio no puede calcularse[cite: 16].
+"""
+def generar_reporte_7(lotes_validos, mapa_confeccionistas) do
+  total_pagado = calcular_total_pagado_taller(lotes_validos, mapa_confeccionistas)
+  total_prendas = calcular_total_prendas_validas(lotes_validos)
+  promedio_texto = calcular_y_formatear_promedio(total_pagado, total_prendas)
+
+  "\nR7. Total semanal del taller y costo promedio por prenda\nTotal a pagar por el taller: $#{Util.formatear_moneda(total_pagado)}\nTotal prendas válidas: #{total_prendas}\n#{promedio_texto}"
+end
+
+# Funciones auxiliares para el reporte 7
+
+@doc """
+Suma el pago neto total que el taller debe pagar a todos los confeccionistas
+"""
+defp calcular_total_pagado_taller(lotes, mapa_confeccionistas) do
+  mapa_confeccionistas
+  |> Map.values()
+  |> Enum.sum_by(fn confeccionista -> Liquidacion.calcular_neto_semanal(lotes, confeccionista) end)
+end
+
+@doc """
+Suma la cantidad total de prendas válidas producidas en la semana
+"""
+defp calcular_total_prendas_validas(lotes) do
+  Enum.sum_by(lotes, fn lote -> lote.prendas end)
+end
+
+@doc """
+Calcula el costo promedio por prenda válida o indica que no es posible calcularlo
+"""
+defp calcular_y_formatear_promedio(_total_pagado, 0) do
+  "Costo promedio por prenda válida: El promedio no puede calcularse."
+end
+
+defp calcular_y_formatear_promedio(total_pagado, total_prendas) do
+  promedio = total_pagado / total_prendas
+  "Costo promedio por prenda válida: $#{Util.formatear_moneda(promedio)}"
+end
 
 
 end
