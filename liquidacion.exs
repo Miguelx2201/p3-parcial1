@@ -164,4 +164,4 @@ defmodule Liquidacion do
     IO.puts("Pago neto de María Elena: $#{neto}")
   end
 end
-Liquidacion.ejecutar_ejemplo_maria()
+

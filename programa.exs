@@ -56,3 +56,4 @@ defmodule Programa do
     end
   end
 end
+Programa.main()
