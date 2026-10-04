@@ -194,4 +194,9 @@ defmodule Util do
     |> Enum.map(fn linea -> {linea.id, linea} end)
     |> Enum.into(%{})
   end
+  @doc """
+  Funciones para formatear valores booleanos a "SÍ" o "NO" para outputs al usuario.
+  """
+  defp formatear_booleano(true), do: "SÍ"
+  defp formatear_booleano(false), do: "NO"
 end

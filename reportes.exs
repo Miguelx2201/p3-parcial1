@@ -162,14 +162,13 @@ defmodule Reportes do
     #{filas_texto}
 
     ---------------------------------------------------
-    ¿Se alcanzó la meta de 600 prendas al menos un día?: #{formatear_booleano(alcanzo_al_menos_un_dia)}
-    ¿Se alcanzó la meta de 600 prendas todos los días?: #{formatear_booleano(alcanzo_todos_los_dias)}
+    ¿Se alcanzó la meta de 600 prendas al menos un día?: #{Util.formatear_booleano(alcanzo_al_menos_un_dia)}
+    ¿Se alcanzó la meta de 600 prendas todos los días?: #{Util.formatear_booleano(alcanzo_todos_los_dias)}
     ===================================================
     """)
   end
 
-  defp formatear_booleano(true), do: "SÍ"
-  defp formatear_booleano(false), do: "NO"
+  
 
   @doc """
   Genera e imprime el Reporte R4: Liquidación de todos los confeccionistas,
