@@ -100,5 +100,73 @@ def reporte_5(lotes_validos, mapa_confeccionistas) do
     end
   end
 
+@doc """
+R6: Confeccionista con mejor calidad: menor porcentaje de defectos ponderado por
+prendas entre quienes tengan al menos 3 lotes válidos.
+"""
+  def reporte_6(lotes_validos, mapa_confeccionistas) do
+    resultado =
+      lotes_validos
+      |> Enum.group_by(fn l -> l.confeccionista end)
+      |> filtrar_por_minimo_lotes()
+      |> calcular_calidad_candidatos()
+      |> mostrar_ganador_calidad(mapa_confeccionistas)
+
+    "\nR6. Confeccionista con mejor calidad\n#{resultado}"
+  end
+
+  # Funciones auxiliares para el reporte 6
+
+  @doc """
+  1. Filtra confeccionistas que tengan al menos 3 lotes válidos
+  """
+  defp filtrar_por_minimo_lotes(lotes_por_conf) do
+    Enum.filter(lotes_por_conf, fn {_cod, lotes} -> length(lotes) >= 3 end)
+  end
+
+  @doc """
+  2. Calcula el porcentaje ponderado y el total de prendas para cada candidato
+  """
+  defp calcular_calidad_candidatos(candidatos_lotes) do
+    Enum.map(candidatos_lotes, fn {cod, lotes} ->
+      porcentaje = calcular_porcentaje_ponderado(lotes)
+      total_prendas = Enum.sum_by(lotes, fn l -> l.prendas end)
+
+      {cod, porcentaje, total_prendas, length(lotes)}
+    end)
+  end
+
+  @doc """
+  3. Aplica la fórmula del promedio ponderado: suma(defectos * prendas) / suma(prendas)
+  """
+  defp calcular_porcentaje_ponderado(lotes) do
+    suma_defectos_prendas = Enum.sum_by(lotes, fn l -> l.defectos * l.prendas end)
+    total_prendas = Enum.sum_by(lotes, fn l -> l.prendas end)
+
+    suma_defectos_prendas / total_prendas
+  end
+
+  @doc """
+  4. Determina el porcentaje mínimo e imprime el o los ganadores
+  """
+  defp mostrar_ganador_calidad([], _mapa_confeccionistas) do
+    "Ningún confeccionista cumple con el mínimo de 3 lotes válidos."
+  end
+
+  defp mostrar_ganador_calidad(candidatos, mapa_confeccionistas) do
+    # Encontrar el menor porcentaje de defectos
+    {_cod, min_porcentaje, _, _} = Enum.min_by(candidatos, fn {_cod, pct, _, _} -> pct end)
+
+    # Filtrar todos los que empaten en el primer lugar
+    ganadores = Enum.filter(candidatos, fn {_cod, pct, _, _} -> pct == min_porcentaje end)
+
+    Enum.map_join(ganadores, "\n", fn {cod, pct, prendas, num_lotes} ->
+      datos_conf = Map.get(mapa_confeccionistas, cod, %{})
+      nombre = Map.get(datos_conf, :nombre, cod)
+
+      "Confeccionista: #{nombre} (#{cod})\nPorcentaje ponderado de defectos: #{pct}%\nLotes válidos: #{num_lotes} | Total prendas: #{prendas}"
+    end)
+  end
+
 
 end
