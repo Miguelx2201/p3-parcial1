@@ -235,6 +235,18 @@ defmodule Reportes do
     """)
   end
 
+  def generar_reportes(lotes_validos, lotes_rechazados, confeccionistas, lineas) do
+    reporte1 = generar_reporte_r1(lotes_rechazados)
+    reporte2 = generar_reporte_r2(lotes_validos, lineas)
+    reporte3 = generar_reporte_r3(lotes_validos)
+    reporte4 = generar_reporte_r4(lotes_validos, confeccionistas)
+    # reporte5 = generar_reporte_r5()
+    # reporte6 = generar_reporte_r6()
+    # reporte7 = generar_reporte_r7()
+    # reporte8 = generar_reporte_r8()
+    reporte1 <> "\n\n" <> reporte2 <> "\n\n" <> reporte3 <> "\n\n" <> reporte4 <> "\n\n" #<> reporte5 <> "\n\n" <> reporte6 <> "\n\n" <> reporte7 <> "\n\n" <> reporte8
+  end
+
   def probar_reportes_1_4() do
     lotes_rechazados = [
       %{motivo: :confeccionista_desconocido, confeccionista: "C1", linea: "L1", prendas: 100, dia: 1, defectos: 2.0},
@@ -260,12 +272,8 @@ defmodule Reportes do
       "C3" => %{codigo: "C3", nombre: "Pedro", alquiler: false}
     }
 
-    reporte1 = Reportes.generar_reporte_r1(lotes_rechazados)
-    reporte2 = Reportes.generar_reporte_r2(lotes, lineas)
-    reporte3 = Reportes.generar_reporte_r3(lotes)
-    reporte4 = Reportes.generar_reporte_r4(lotes, confeccionistas)
-    reportes = reporte1 <> "\n\n" <> reporte2 <> "\n\n" <> reporte3 <> "\n\n" <> reporte4
-    Util.mostrar_mensaje(reportes)
+    generar_reportes(lotes, lotes_rechazados, confeccionistas, lineas)
+    |> Util.mostrar_mensaje()
   end
 end
 Reportes.probar_reportes_1_4()
