@@ -5,11 +5,18 @@ todos. Los días sin lotes válidos se indican como tales. Al final se informa q
 ocupó el primer lugar más días y cuántos; si hay empate, se incluyen todos los empatados.
 """
 def reporte_5(lotes_validos, mapa_confeccionistas) do
-    IO.puts("\nR5. Confeccionista(s) con mas prendas por día:")
-    ganadores_por_dia = for dia <- 1..6 do
+    encabezado = "\nR5. Confeccionista(s) con mas prendas por día:"
+
+    resultados_dias =
+      for dia <- 1..6 do
         procesar_dia(dia, lotes_validos, mapa_confeccionistas)
       end
-    imprimir_resumen_general(ganadores_por_dia, mapa_confeccionistas)
+
+    ganadores_por_dia = Enum.map(resultados_dias, fn {codigos, _mensaje} -> codigos end)
+    lineas_dias = Enum.map_join(resultados_dias, "\n", fn {_codigos, mensaje} -> mensaje end)
+    resumen = obtener_resumen_general(ganadores_por_dia, mapa_confeccionistas)
+
+    Enum.join([encabezado, lineas_dias, resumen], "\n")
   end
 
   #Funciones auxiliares para el reporte 5
@@ -22,8 +29,7 @@ def reporte_5(lotes_validos, mapa_confeccionistas) do
     lotes_dia = Enum.filter(lotes, fn lot -> lot.dia == dia end)
 
     if lotes_dia == [] do
-      IO.puts("Día #{dia}: Sin lotes válidos")
-      []
+      {[], "Día #{dia}: Sin lotes válidos"}
     else
       # Calcular prendas por confeccionista en el día
       prendas_por_conf = calcular_prendas_por_confeccionista(lotes_dia)
@@ -37,11 +43,10 @@ def reporte_5(lotes_validos, mapa_confeccionistas) do
         |> Enum.filter(fn {_cod, prendas} -> prendas == max_prendas end)
         |> Enum.map(fn {cod, _prendas} -> cod end)
 
-      # Imprimir el resultado del día
       nombres = obtener_nombres(codigos_ganadores, confeccionistas)
-      IO.puts("Día #{dia}: #{nombres} con #{max_prendas} prendas")
+      mensaje_dia = "Día #{dia}: #{nombres} con #{max_prendas} prendas"
 
-      codigos_ganadores
+      {codigos_ganadores, mensaje_dia}
     end
   end
 
@@ -49,14 +54,14 @@ def reporte_5(lotes_validos, mapa_confeccionistas) do
    Suma las prendas de cada confeccionista para una lista de lotes dada
   """
   defp calcular_prendas_por_confeccionista(lotes) do
-  lotes
-  |> Enum.group_by(fn l -> l.confeccionista end)
-  |> Enum.map(fn {cod, lista_lotes} ->
-    total_prendas = Enum.reduce(lista_lotes, 0, fn lote, acc -> lote.prendas + acc end)
+    lotes
+    |> Enum.group_by(fn l -> l.confeccionista end)
+    |> Enum.map(fn {cod, lista_lotes} ->
+      total_prendas = Enum.reduce(lista_lotes, 0, fn lote, acc -> lote.prendas + acc end)
 
-    {cod, total_prendas}
-  end)
-end
+      {cod, total_prendas}
+    end)
+  end
 
   @doc """
    Convierte una lista de códigos a los nombres a los cuales corresponden los códigos
@@ -71,13 +76,13 @@ end
   end
 
   @doc """
-  Cuenta los días ganados por cada confeccionista e imprime el líder general
+   Cuenta los días ganados por cada confeccionista y obtiene el líder general
   """
-  defp imprimir_resumen_general(ganadores_por_dia, confeccionistas) do
+  defp obtener_resumen_general(ganadores_por_dia, confeccionistas) do
     todos_los_ganadores = List.flatten(ganadores_por_dia)
 
     if todos_los_ganadores == [] do
-      IO.puts("\nResumen general: No hubo días con lotes válidos.")
+      "\nResumen general: No hubo días con lotes válidos."
     else
       # Contar cuántas veces aparece cada código
       conteo = Enum.frequencies(todos_los_ganadores)
@@ -91,8 +96,7 @@ end
 
       nombres_lideres = obtener_nombres(lideres_codigos, confeccionistas)
 
-      IO.puts("\nResumen general:")
-      IO.puts("Confeccionista(s) en primer lugar con #{max_dias} día(s): #{nombres_lideres}")
+      "\nResumen general:\nConfeccionista(s) en primer lugar con #{max_dias} día(s): #{nombres_lideres}"
     end
   end
 
