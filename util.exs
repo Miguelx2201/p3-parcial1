@@ -8,8 +8,8 @@ defmodule Util do
   @doc """
   Imprime en consola cualquier reporte o mensaje del sistema.
   """
-  def imprimir_reporte(texto_reporte) do
-    IO.puts(texto_reporte)
+  def mostrar_mensaje(texto) do
+    IO.puts(texto)
   end
 
   @doc """
@@ -78,7 +78,8 @@ defmodule Util do
     confeccionista = Map.get(confeccionistas, codigo_input)
 
     if confeccionista == nil do
-      IO.puts("\nEl confeccionista con código '#{codigo_input}' no existe.")
+      mensaje = ("El confeccionista con código '#{codigo_input}' no existe.")
+      {:error, mensaje}
     else
       imprimir_comprobante_individual(codigo_input, confeccionista, lotes_validos)
     end
@@ -129,7 +130,7 @@ defmodule Util do
       end
 
     # 4. Salida por consola
-    IO.puts("""
+    mensaje = ("""
     ============================================================
     COMPROBANTE INDIVIDUAL DE LIQUIDACIÓN
     ============================================================
@@ -147,6 +148,7 @@ defmodule Util do
     PAGO NETO TOTAL:        $#{formatear_moneda(neto)}
     ============================================================
     """)
+    {:ok, mensaje}
   end
 
   @doc """
