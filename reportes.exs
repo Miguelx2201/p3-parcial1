@@ -244,7 +244,7 @@ defmodule Reportes do
     # reporte6 = generar_reporte_r6()
     # reporte7 = generar_reporte_r7()
     # reporte8 = generar_reporte_r8()
-    reporte1 <> "\n\n" <> reporte2 <> "\n\n" <> reporte3 <> "\n\n" <> reporte4 <> "\n\n" #<> reporte5 <> "\n\n" <> reporte6 <> "\n\n" <> reporte7 <> "\n\n" <> reporte8
+    Enum.join([reporte1, reporte2, reporte3, reporte4], "\n\n")
   end
 
   def probar_reportes_1_4() do
