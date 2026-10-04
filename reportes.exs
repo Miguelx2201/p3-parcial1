@@ -1,5 +1,7 @@
 Code.require_file("liquidacion.exs")
 alias Liquidacion
+Code.require_file("util.exs")
+alias Util
 defmodule Reportes do
 
   @doc """
@@ -30,7 +32,7 @@ defmodule Reportes do
       end
 
     # 3. Impresión final del reporte
-    IO.puts("""
+    ("""
     ===================================================
     REPORTE #1 - LOTES RECHAZADOS
     ===================================================
@@ -109,7 +111,7 @@ defmodule Reportes do
         "  - Línea #{item.linea} (#{item.nombre}): #{item.prendas} prendas | #{item.puestos} puestos | Productividad: #{prod_formateada} prendas/puesto"
       end)
 
-    IO.puts("""
+    ("""
     ===================================================
     REPORTE #2 - PRODUCTIVIDAD POR LÍNEA DE PRODUCCIÓN
     ===================================================
@@ -154,7 +156,7 @@ defmodule Reportes do
         "  - Día #{dia.dia}: #{dia.total_prendas} prendas | Alcanzó meta (600): #{estado}"
       end)
 
-    IO.puts("""
+    ("""
     ===================================================
     REPORTE #3 - PRODUCCIÓN DIARIA Y METAS DEL TALLER
     ===================================================
@@ -162,14 +164,13 @@ defmodule Reportes do
     #{filas_texto}
 
     ---------------------------------------------------
-    ¿Se alcanzó la meta de 600 prendas al menos un día?: #{formatear_booleano(alcanzo_al_menos_un_dia)}
-    ¿Se alcanzó la meta de 600 prendas todos los días?: #{formatear_booleano(alcanzo_todos_los_dias)}
+    ¿Se alcanzó la meta de 600 prendas al menos un día?: #{Util.formatear_booleano(alcanzo_al_menos_un_dia)}
+    ¿Se alcanzó la meta de 600 prendas todos los días?: #{Util.formatear_booleano(alcanzo_todos_los_dias)}
     ===================================================
     """)
   end
 
-  defp formatear_booleano(true), do: "SÍ"
-  defp formatear_booleano(false), do: "NO"
+
 
   @doc """
   Genera e imprime el Reporte R4: Liquidación de todos los confeccionistas,
@@ -218,13 +219,13 @@ defmodule Reportes do
       |> Enum.map_join("\n", fn {confeccionista, index} ->
         "#{index}. [#{confeccionista.codigo}] #{confeccionista.nombre}\n" <>
         "   - Total Prendas: #{confeccionista.prendas}\n" <>
-        "   - Valor Lotes:   $#{formatear_moneda(confeccionista.valor_lotes)}\n" <>
-        "   - Bonificaciones: $#{formatear_moneda(confeccionista.bono_total)}\n" <>
-        "   - Alquiler:      -$#{formatear_moneda(confeccionista.descuento_alquiler)}\n" <>
-        "   - Pago Neto:     $#{formatear_moneda(confeccionista.neto_semanal)}"
+        "   - Valor Lotes:   $#{Util.formatear_moneda(confeccionista.valor_lotes)}\n" <>
+        "   - Bonificaciones: $#{Util.formatear_moneda(confeccionista.bono_total)}\n" <>
+        "   - Alquiler:      -$#{Util.formatear_moneda(confeccionista.descuento_alquiler)}\n" <>
+        "   - Pago Neto:     $#{Util.formatear_moneda(confeccionista.neto_semanal)}"
       end)
 
-    IO.puts("""
+    ("""
     ===================================================
     REPORTE #4 - LIQUIDACIÓN SEMANAL DE CONFECCIONISTAS
     ===================================================
@@ -234,14 +235,18 @@ defmodule Reportes do
     """)
   end
 
-  # Función auxiliar para garantizar exactamente 2 decimales sin notación científica
-  defp formatear_moneda(monto) when is_integer(monto) do
-    :erlang.float_to_binary(monto * 1.0, decimals: 2)
+  def generar_reportes(lotes_validos, lotes_rechazados, confeccionistas, lineas) do
+    reporte1 = generar_reporte_r1(lotes_rechazados)
+    reporte2 = generar_reporte_r2(lotes_validos, lineas)
+    reporte3 = generar_reporte_r3(lotes_validos)
+    reporte4 = generar_reporte_r4(lotes_validos, confeccionistas)
+    # reporte5 = generar_reporte_r5()
+    # reporte6 = generar_reporte_r6()
+    # reporte7 = generar_reporte_r7()
+    # reporte8 = generar_reporte_r8()
+    Enum.join([reporte1, reporte2, reporte3, reporte4], "\n\n")
   end
 
-  defp formatear_moneda(monto) when is_float(monto) do
-    :erlang.float_to_binary(monto, decimals: 2)
-  end
   def probar_reportes_1_4() do
     lotes_rechazados = [
       %{motivo: :confeccionista_desconocido, confeccionista: "C1", linea: "L1", prendas: 100, dia: 1, defectos: 2.0},
@@ -257,8 +262,8 @@ defmodule Reportes do
     ]
 
     lineas = %{
-      "L1" => %{puestos: 10, nombre: "Linea norte", puestos: 10},
-      "L2" => %{puestos: 15, nombre: "Linea sur", puestos: 15}
+      "L1" => %{id: "L1", nombre: "Linea norte", puestos: 10},
+      "L2" => %{id: "L2", nombre: "Linea sur", puestos: 15}
     }
 
     confeccionistas = %{
@@ -267,10 +272,8 @@ defmodule Reportes do
       "C3" => %{codigo: "C3", nombre: "Pedro", alquiler: false}
     }
 
-    Reportes.generar_reporte_r1(lotes_rechazados)
-    Reportes.generar_reporte_r2(lotes, lineas)
-    Reportes.generar_reporte_r3(lotes)
-    Reportes.generar_reporte_r4(lotes, confeccionistas)
+    generar_reportes(lotes, lotes_rechazados, confeccionistas, lineas)
+    |> Util.mostrar_mensaje()
   end
 end
 Reportes.probar_reportes_1_4()
