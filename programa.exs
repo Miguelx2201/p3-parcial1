@@ -1,10 +1,10 @@
-Code.required_file("datos.exs", __DIR__)
+Code.require_file("datos.exs", __DIR__)
 alias Datos
-Code.required_file("util.exs", __DIR__)
+Code.require_file("util.exs", __DIR__)
 alias Util
-Code.required_file("validacion.exs", __DIR__)
+Code.require_file("validacion.exs", __DIR__)
 alias Validacion
-Code.required_file("reportes.exs", __DIR__)
+Code.require_file("reportes.exs", __DIR__)
 alias Reportes
 Code.require_file("liquidacion.exs", __DIR__)
 alias Liquidacion
