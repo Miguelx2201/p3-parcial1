@@ -1,5 +1,7 @@
 Code.require_file("liquidacion.exs")
 alias Liquidacion
+Code.requiere_file("util.exs")
+alias Util
 defmodule Reportes do
 
   @doc """
@@ -168,7 +170,7 @@ defmodule Reportes do
     """)
   end
 
-  
+
 
   @doc """
   Genera e imprime el Reporte R4: Liquidación de todos los confeccionistas,
@@ -217,10 +219,10 @@ defmodule Reportes do
       |> Enum.map_join("\n", fn {confeccionista, index} ->
         "#{index}. [#{confeccionista.codigo}] #{confeccionista.nombre}\n" <>
         "   - Total Prendas: #{confeccionista.prendas}\n" <>
-        "   - Valor Lotes:   $#{formatear_moneda(confeccionista.valor_lotes)}\n" <>
-        "   - Bonificaciones: $#{formatear_moneda(confeccionista.bono_total)}\n" <>
-        "   - Alquiler:      -$#{formatear_moneda(confeccionista.descuento_alquiler)}\n" <>
-        "   - Pago Neto:     $#{formatear_moneda(confeccionista.neto_semanal)}"
+        "   - Valor Lotes:   $#{Util.formatear_moneda(confeccionista.valor_lotes)}\n" <>
+        "   - Bonificaciones: $#{Util.formatear_moneda(confeccionista.bono_total)}\n" <>
+        "   - Alquiler:      -$#{Util.formatear_moneda(confeccionista.descuento_alquiler)}\n" <>
+        "   - Pago Neto:     $#{Util.formatear_moneda(confeccionista.neto_semanal)}"
       end)
 
     ("""
@@ -233,14 +235,6 @@ defmodule Reportes do
     """)
   end
 
-  # Función auxiliar para garantizar exactamente 2 decimales sin notación científica
-  defp formatear_moneda(monto) when is_integer(monto) do
-    :erlang.float_to_binary(monto * 1.0, decimals: 2)
-  end
-
-  defp formatear_moneda(monto) when is_float(monto) do
-    :erlang.float_to_binary(monto, decimals: 2)
-  end
   def probar_reportes_1_4() do
     lotes_rechazados = [
       %{motivo: :confeccionista_desconocido, confeccionista: "C1", linea: "L1", prendas: 100, dia: 1, defectos: 2.0},
