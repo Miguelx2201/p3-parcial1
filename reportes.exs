@@ -30,7 +30,7 @@ defmodule Reportes do
       end
 
     # 3. Impresión final del reporte
-    IO.puts("""
+    ("""
     ===================================================
     REPORTE #1 - LOTES RECHAZADOS
     ===================================================
@@ -109,7 +109,7 @@ defmodule Reportes do
         "  - Línea #{item.linea} (#{item.nombre}): #{item.prendas} prendas | #{item.puestos} puestos | Productividad: #{prod_formateada} prendas/puesto"
       end)
 
-    IO.puts("""
+    ("""
     ===================================================
     REPORTE #2 - PRODUCTIVIDAD POR LÍNEA DE PRODUCCIÓN
     ===================================================
@@ -154,7 +154,7 @@ defmodule Reportes do
         "  - Día #{dia.dia}: #{dia.total_prendas} prendas | Alcanzó meta (600): #{estado}"
       end)
 
-    IO.puts("""
+    ("""
     ===================================================
     REPORTE #3 - PRODUCCIÓN DIARIA Y METAS DEL TALLER
     ===================================================
@@ -224,7 +224,7 @@ defmodule Reportes do
         "   - Pago Neto:     $#{formatear_moneda(confeccionista.neto_semanal)}"
       end)
 
-    IO.puts("""
+    ("""
     ===================================================
     REPORTE #4 - LIQUIDACIÓN SEMANAL DE CONFECCIONISTAS
     ===================================================
