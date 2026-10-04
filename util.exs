@@ -11,7 +11,7 @@ defmodule Util do
   def imprimir_reporte(texto_reporte) do
     IO.puts(texto_reporte)
   end
-  
+
   @doc """
   Solicita al usuario un lote adicional en una sola línea separada por punto y coma.
   Formato esperado: confeccionista;linea;dia;prendas;defectos (Ej: C03;L2;4;85;3.5)
@@ -66,14 +66,14 @@ defmodule Util do
   end
 
   @doc """
-  Solicita el código de un confeccionista por consola e imprime su comprobante individual.
-  Muestra únicamente los días en los que registró al menos un lote válido.
+  Solicita el código de un confeccionista y muestra su comprobante si existe.
   """
   def solicitar_y_mostrar_comprobante(lotes_validos, confeccionistas) do
     IO.puts("\n" <> String.duplicate("=", 60))
     codigo_input =
       IO.gets("Ingrese el código de confeccionista para ver su comprobante individual: ")
       |> String.trim()
+      |> String.upcase() # Normaliza el código a mayúsculas (ej: c01 -> C01)
 
     confeccionista = Map.get(confeccionistas, codigo_input)
 
@@ -87,72 +87,67 @@ defmodule Util do
   @doc """
   Imprime el desglose detallado día a día de un confeccionista.
   """
-def imprimir_comprobante_individual(codigo, confeccionista, lotes_validos) do
-  # 1. Construir el detalle diario reutilizando las funciones puras de Liquidacion
-  desglose_dias =
-    for dia <- 1..6 do
-      lotes_dia = Liquidacion.filtrar_lotes_diarios_confeccionista(lotes_validos, codigo, dia)
+  def imprimir_comprobante_individual(codigo, confeccionista, lotes_validos) do
+    # 1. Construir el detalle diario reutilizando los lotes del día ya filtrados
+    desglose_dias =
+      for dia <- 1..6 do
+        lotes_dia = Liquidacion.filtrar_lotes_diarios_confeccionista(lotes_validos, codigo, dia)
 
-      # La regla B.5 exige mostrar solo los días con al menos un lote válido
-      if Enum.any?(lotes_dia) do
-        prendas_dia = Liquidacion.calcular_prendas_diarias(lotes_validos, codigo, dia)
-        valor_lotes_dia = Enum.sum_by(lotes_dia, &Liquidacion.calcular_valor_lote/1)
+        if Enum.any?(lotes_dia) do
+          prendas_dia = Enum.sum_by(lotes_dia, fn lote -> lote.prendas end)
+          valor_lotes_dia = Enum.sum_by(lotes_dia, &Liquidacion.calcular_valor_lote/1)
+          bono_dia = if prendas_dia >= 120, do: 18_000, else: 0
 
-        bono_dia =
-          if Liquidacion.validar_merece_bono_diario?(lotes_validos, codigo, dia) do
-            18_000
-          else
-            0
-          end
-
-        %{
-          dia: dia,
-          prendas: prendas_dia,
-          valor_lotes: valor_lotes_dia,
-          bono: bono_dia
-        }
-      else
-        nil
+          %{
+            dia: dia,
+            prendas: prendas_dia,
+            valor_lotes: valor_lotes_dia,
+            bono: bono_dia
+          }
+        else
+          nil
+        end
       end
-    end
-    |> Enum.reject(&is_nil/1)
+      |> Enum.reject(&is_nil/1)
 
-  # 2. Reutilizar las funciones acumuladoras de Liquidacion para los totales
-  suma_lotes = Liquidacion.calcular_total_semanal(lotes_validos, confeccionista)
-  suma_bonos = Liquidacion.calcular_bono_total_semanal(lotes_validos, codigo)
-  descuento_alquiler = Liquidacion.calcular_descuento_total_semanal(lotes_validos, confeccionista)
-  neto = Liquidacion.calcular_neto_semanal(lotes_validos, confeccionista)
+    # 2. Totales calculados con las funciones puras de Liquidacion
+    suma_lotes = Liquidacion.calcular_total_semanal(lotes_validos, confeccionista)
+    suma_bonos = Liquidacion.calcular_bono_total_semanal(lotes_validos, codigo)
+    descuento_alquiler = Liquidacion.calcular_descuento_total_semanal(lotes_validos, confeccionista)
 
-  # 3. Formatear detalle de los días trabajados
-  filas_dias =
-    if Enum.empty?(desglose_dias) do
-      "   (No registró lotes válidos en ningún día de la semana)"
-    else
-      Enum.map_join(desglose_dias, "\n", fn d ->
-        "   - Día #{d.dia}: #{d.prendas} prendas | Valor Lotes: $#{formatear_moneda(d.valor_lotes)} | Bono: $#{formatear_moneda(d.bono)}"
-      end)
-    end
+    # Se calcula la resta directa con los valores ya obtenidos
+    neto = suma_lotes + suma_bonos - descuento_alquiler
 
-  # 4. Salida por consola
-  IO.puts("""
-  ============================================================
-  COMPROBANTE INDIVIDUAL DE LIQUIDACIÓN
-  ============================================================
-  Confeccionista: #{confeccionista.nombre} [Código: #{codigo}]
-  Alquila máquina: #{if Liquidacion.validar_confeccionista_alquila_maquina?(confeccionista), do: "SÍ", else: "NO"}
+    # 3. Formatear detalle de los días trabajados
+    filas_dias =
+      if Enum.empty?(desglose_dias) do
+        "   (No registró lotes válidos en ningún día de la semana)"
+      else
+        Enum.map_join(desglose_dias, "\n", fn d ->
+          "   - Día #{d.dia}: #{d.prendas} prendas | Valor Lotes: $#{formatear_moneda(d.valor_lotes)} | Bono: $#{formatear_moneda(d.bono)}"
+        end)
+      end
 
-  Detalle por día trabajado:
-  #{filas_dias}
+    # 4. Salida por consola
+    IO.puts("""
+    ============================================================
+    COMPROBANTE INDIVIDUAL DE LIQUIDACIÓN
+    ============================================================
+    Confeccionista: #{confeccionista.nombre} [Código: #{codigo}]
+    Alquila máquina: #{if Liquidacion.validar_confeccionista_alquila_maquina?(confeccionista), do: "SÍ", else: "NO"}
 
-  ------------------------------------------------------------
-  Suma de Lotes:          $#{formatear_moneda(suma_lotes)}
-  Suma de Bonificaciones: $#{formatear_moneda(suma_bonos)}
-  Descuento por Alquiler: -$#{formatear_moneda(descuento_alquiler)}
-  ------------------------------------------------------------
-  PAGO NETO TOTAL:        $#{formatear_moneda(neto)}
-  ============================================================
-  """)
-end
+    Detalle por día trabajado:
+    #{filas_dias}
+
+    ------------------------------------------------------------
+    Suma de Lotes:          $#{formatear_moneda(suma_lotes)}
+    Suma de Bonificaciones: $#{formatear_moneda(suma_bonos)}
+    Descuento por Alquiler: -$#{formatear_moneda(descuento_alquiler)}
+    ------------------------------------------------------------
+    PAGO NETO TOTAL:        $#{formatear_moneda(neto)}
+    ============================================================
+    """)
+  end
 
   @doc """
   Formatea un monto numérico (entero o flotante) con exactamente 2 decimales.
@@ -182,8 +177,8 @@ end
   Convierte la lista de confeccionistas a un mapa indexado por código:
   %{"C01" => %{nombre: "María Elena Ríos", alquiler: true}, ...}
   """
-  def confeccionistas_mapa do
-    confeccionistas()
+  def confeccionistas_mapa(confeccionistas) do
+    confeccionistas
     |> Enum.map(fn confeccionista -> {confeccionista.codigo, confeccionista} end)
     |> Enum.into(%{})
   end
@@ -192,9 +187,9 @@ end
   Convierte la lista de líneas a un mapa indexado por ID:
   %{"L1" => %{nombre: "Línea Norte", puestos: 6}, ...}
   """
-  def lineas_mapa do
-    lineas()
-    |> Enum.map(fn linea -> {linea.id, l} end)
+  def lineas_mapa(lineas) do
+    lineas
+    |> Enum.map(fn linea -> {linea.id, linea} end)
     |> Enum.into(%{})
   end
 end
