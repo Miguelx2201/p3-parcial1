@@ -1,6 +1,6 @@
 Code.require_file("liquidacion.exs")
 alias Liquidacion
-Code.requiere_file("util.exs")
+Code.require_file("util.exs")
 alias Util
 defmodule Reportes do
 
@@ -250,8 +250,8 @@ defmodule Reportes do
     ]
 
     lineas = %{
-      "L1" => %{puestos: 10, nombre: "Linea norte", puestos: 10},
-      "L2" => %{puestos: 15, nombre: "Linea sur", puestos: 15}
+      "L1" => %{id: "L1", nombre: "Linea norte", puestos: 10},
+      "L2" => %{id: "L2", nombre: "Linea sur", puestos: 15}
     }
 
     confeccionistas = %{
@@ -260,10 +260,12 @@ defmodule Reportes do
       "C3" => %{codigo: "C3", nombre: "Pedro", alquiler: false}
     }
 
-    Reportes.generar_reporte_r1(lotes_rechazados)
-    Reportes.generar_reporte_r2(lotes, lineas)
-    Reportes.generar_reporte_r3(lotes)
-    Reportes.generar_reporte_r4(lotes, confeccionistas)
+    reporte1 = Reportes.generar_reporte_r1(lotes_rechazados)
+    reporte2 = Reportes.generar_reporte_r2(lotes, lineas)
+    reporte3 = Reportes.generar_reporte_r3(lotes)
+    reporte4 = Reportes.generar_reporte_r4(lotes, confeccionistas)
+    reportes = reporte1 <> "\n\n" <> reporte2 <> "\n\n" <> reporte3 <> "\n\n" <> reporte4
+    Util.mostrar_mensaje(reportes)
   end
 end
 Reportes.probar_reportes_1_4()

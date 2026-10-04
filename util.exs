@@ -197,6 +197,6 @@ defmodule Util do
   @doc """
   Funciones para formatear valores booleanos a "SÍ" o "NO" para outputs al usuario.
   """
-  defp formatear_booleano(true), do: "SÍ"
-  defp formatear_booleano(false), do: "NO"
+  def formatear_booleano(true), do: "SÍ"
+  def formatear_booleano(false), do: "NO"
 end
