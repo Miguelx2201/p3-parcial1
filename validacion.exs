@@ -75,21 +75,21 @@ Procesa una lista de todo tipo de lotes y devuelve un mapa con los lotes validos
 """
 def separar_lotes(lotes, confeccionistas, lineas) do
     resultado =
-      Enum.reduce(lotes, %{validos: [], rechazados: []}, fn lote, acc ->
+      Enum.reduce(lotes, %{validos: [], invalidos: []}, fn lote, acc ->
         case validar_lote(lote, confeccionistas, lineas) do
           {:ok, lote_validado} ->
             %{acc | validos: [lote_validado | acc.validos]}
 
           {:error, motivo} ->
             lote_con_motivo = Map.put(lote, :motivo, motivo)
-            %{acc | rechazados: [lote_con_motivo | acc.rechazados]}
+            %{acc | invalidos: [lote_con_motivo | acc.invalidos]}
         end
       end)
 
     # Inverte las listas para mantener el orden original de lectura
     %{
       validos: Enum.reverse(resultado.validos),
-      rechazados: Enum.reverse(resultado.rechazados)
+      invalidos: Enum.reverse(resultado.invalidos)
     }
   end
 
