@@ -37,7 +37,7 @@ defmodule Programa do
     #Agregar el lote adicional a la lista de lotes si no es nil.
     lotes = if lote_adicional != nil, do: [lote_adicional | lotes], else: lotes
 
-    lotes_separados = Validacion.separar_lotes(lotes)
+    lotes_separados = Validacion.separar_lotes(lotes, confeccionistas, lineas)
     lotes_validos = lotes_separados.validos
     lotes_invalidos = lotes_separados.invalidos
 
