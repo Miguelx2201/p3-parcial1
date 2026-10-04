@@ -60,7 +60,7 @@ defmodule Liquidacion do
   Devuelve una lista de lotes del confeccionista.
   """
   def filtrar_lotes_por_confeccionista(lotes, codigo_confeccionista) do
-    Map.get(lotes, codigo_confeccionista)
+    Enum.filter(lotes, fn lote -> lote.confeccionista == codigo_confeccionista end)
   end
 
   @doc """
@@ -151,18 +151,17 @@ defmodule Liquidacion do
   end
 
   def ejecutar_ejemplo_maria do
-    confeccionistas = %{
-      "C1" => %{codigo: "C1", nombre: "María Elena Ríos", alquiler: true}
-    }
-    lotes = %{
-      "C1" => [
-        %{confeccionista: "C01", linea: "L1", dia: 1, prendas: 70, defectos: 1.5},
-        %{confeccionista: "C01", linea: "L2", dia: 1, prendas: 55, defectos: 7},
-        %{confeccionista: "C01", linea: "L1", dia: 2, prendas: 90, defectos: 12}
-      ]
-    }
-  calcular_neto_semanal(lotes, Map.get(confeccionistas, "C1"))
-  |> IO.puts()
+    confeccionista = %{codigo: "C01", nombre: "María Elena Ríos", alquiler: true}
+
+    # Lotes en lista plana de mapas
+    lotes = [
+      %{confeccionista: "C01", linea: "L1", dia: 1, prendas: 70, defectos: 1.5},
+      %{confeccionista: "C01", linea: "L2", dia: 1, prendas: 55, defectos: 7.0},
+      %{confeccionista: "C01", linea: "L1", dia: 2, prendas: 90, defectos: 12.0}
+    ]
+
+    neto = calcular_neto_semanal(lotes, confeccionista)
+    IO.puts("Pago neto de María Elena: $#{neto}")
   end
 end
 Liquidacion.ejecutar_ejemplo_maria()
