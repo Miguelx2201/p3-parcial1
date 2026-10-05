@@ -2,11 +2,20 @@ Code.require_file("util.exs", __DIR__)
 alias Util
 
 defmodule Mediciones do
+  @moduledoc """
+  Módulo de pruebas de rendimientoy análisis de eficiencia algorítmica.
+  Realiza experimentos empíricos para comparar: la búsqueda de elementos y la construcción de colecciones
+  """
+
   def main do
     medicion1()
     medicion2()
   end
 
+  @doc """
+  **Experimento 1: Compara el tiempo de búsqueda entre una Lista y un Mapa.
+  Construye una colección de 100.000 confeccionistas y realiza 1.000 búsquedas aleatorias.
+  """
   def medicion1() do
     confeccionistas_lista =
       Enum.map(1..100_000, fn i ->
@@ -53,6 +62,9 @@ defmodule Mediciones do
     |> Util.mostrar_mensaje()
   end
 
+  @doc """
+  Experimento 2: Compara la acumulación de 20.000 elementos mediante concatenación vs inserción al inicio.
+  """
   def medicion2() do
     {tiempo_al_final, _resultado} = :timer.tc(fn ->
         Enum.reduce(1..20_000, [], fn elemento, acomulador -> acomulador ++ [elemento] end)
