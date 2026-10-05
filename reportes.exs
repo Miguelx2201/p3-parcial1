@@ -183,7 +183,7 @@ defmodule Reportes do
     datos_confeccionistas =
       Enum.map(confeccionistas, fn {codigo, confeccionista} ->
         # 1. Filtrar los lotes pertenecientes a este confeccionista (usando Enum.filter)
-        lotes_conf = Enum.filter(lotes, fn lote -> lote.confeccionista == codigo end)
+        lotes_conf = Enum.filter(lotes, fn lote -> lote.codigo_confeccionista == codigo end)
 
         # 2. Cálculos de liquidación
         total_prendas = Enum.sum_by(lotes_conf, fn l -> l.prendas end)
@@ -523,4 +523,3 @@ defmodule Reportes do
   end
 
 end
-
