@@ -58,9 +58,9 @@ defmodule Programa do
     liquidaciones = Liquidacion.generar_liquidaciones(lotes_validos, confeccionistas)
 
 # Se ejecutan los 3 rankings requeridos en C.1
-IO.puts(Reportes.ranking(liquidaciones, []))
-IO.puts(Reportes.ranking(liquidaciones, campo: :prendas, limite: 3))
-IO.puts(Reportes.ranking(liquidaciones, orden: :asc, campo: :bruto))
+Util.mostrar_mensaje(Reportes.ranking(liquidaciones, []))
+Util.mostrar_mensaje(Reportes.ranking(liquidaciones, campo: :prendas, limite: 3))
+Util.mostrar_mensaje(Reportes.ranking(liquidaciones, orden: :asc, campo: :bruto))
 
   end
 end
