@@ -183,7 +183,7 @@ defmodule Reportes do
     datos_confeccionistas =
       Enum.map(confeccionistas, fn {codigo, confeccionista} ->
         # 1. Filtrar los lotes pertenecientes a este confeccionista (usando Enum.filter)
-        lotes_conf = Enum.filter(lotes, fn lote -> lote.confeccionista == codigo end)
+        lotes_conf = Enum.filter(lotes, fn lote -> lote.codigo_confeccionista == codigo end)
 
         # 2. Cálculos de liquidación
         total_prendas = Enum.sum_by(lotes_conf, fn l -> l.prendas end)
@@ -294,7 +294,7 @@ defmodule Reportes do
   """
   def calcular_prendas_por_confeccionista(lotes) do
     lotes
-    |> Enum.group_by(fn l -> l.confeccionista end)
+    |> Enum.group_by(fn l -> l.codigo_confeccionista end)
     |> Enum.map(fn {cod, lista_lotes} ->
       total_prendas = Enum.reduce(lista_lotes, 0, fn lote, acc -> lote.prendas + acc end)
 
@@ -346,7 +346,7 @@ defmodule Reportes do
   def generar_reporte_r6(lotes_validos, mapa_confeccionistas) do
     resultado =
       lotes_validos
-      |> Enum.group_by(fn l -> l.confeccionista end)
+      |> Enum.group_by(fn l -> l.codigo_confeccionista end)
       |> filtrar_por_minimo_lotes()
       |> calcular_calidad_candidatos()
       |> mostrar_ganador_calidad(mapa_confeccionistas)
@@ -461,7 +461,7 @@ defmodule Reportes do
 
     resultado =
       lotes_validos
-      |> Enum.group_by(fn l -> l.confeccionista end)
+      |> Enum.group_by(fn l -> l.codigo_confeccionista end)
       |> filtrar_confeccionistas_todas_las_lineas(lineas_totales)
       |> formatear_resultado_r8(mapa_confeccionistas)
 
@@ -523,4 +523,3 @@ defmodule Reportes do
   end
 
 end
-

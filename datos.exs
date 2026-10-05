@@ -11,8 +11,8 @@ defmodule Datos do
       %{codigo: "C08", nombre: "Pedro Morales", alquiler: true},
       %{codigo: "C09", nombre: "Sofía Castro", alquiler: false},
       %{codigo: "C10", nombre: "Mateo Ortiz", alquiler: false},
-      %{codigo: "C09", nombre: "Valentina Castillo", alquiler: false},
-      %{codigo: "C10", nombre: "Nelly Mora", alquiler: false}
+      %{codigo: "C11", nombre: "Valentina Castillo", alquiler: false},
+      %{codigo: "C12", nombre: "Nelly Mora", alquiler: false}
     ]
   end
 
@@ -60,7 +60,11 @@ defmodule Datos do
       }
     end
 
-    [lotes_validos|lotes_invalidos]
+    #Antes se tenia de esta manera [lotes_validos|lotes_invalidos]
+    # pero se descubrio que retorna una lista de listas; [lotes_validos, lotes_invalidos] y no una lista plana de lotes.
+    # Entonces se usa la siguiente forma pero con los lotes invalidos primero, asi esa accion tendra complejidad computacional
+    # O(10) ya que la lista de lotes invalidos es de longitud 10
+    lotes_invalidos ++ lotes_validos
   end
 
 end
