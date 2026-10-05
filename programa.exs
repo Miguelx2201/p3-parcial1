@@ -57,16 +57,16 @@ defmodule Programa do
 
     liquidaciones = Liquidacion.generar_liquidaciones(lotes_validos, confeccionistas)
 
-# Se ejecutan los 3 rankings requeridos en C.1
-Util.mostrar_mensaje(Reportes.ranking(liquidaciones, []))
-Util.mostrar_mensaje(Reportes.ranking(liquidaciones, campo: :prendas, limite: 3))
-Util.mostrar_mensaje(Reportes.ranking(liquidaciones, orden: :asc, campo: :bruto))
+    # Se ejecutan los 3 rankings requeridos en C.1
+    Util.mostrar_mensaje(Reportes.ranking(liquidaciones, []))
+    Util.mostrar_mensaje(Reportes.ranking(liquidaciones, campo: :prendas, limite: 3))
+    Util.mostrar_mensaje(Reportes.ranking(liquidaciones, orden: :asc, campo: :bruto))
 
-taller_aliado = %{1 => 550, 2 => 620, 3 => 480, 5 => 710, 7 => 200}
+    taller_aliado = %{1 => 550, 2 => 620, 3 => 480, 5 => 710, 7 => 200}
 
-# Combinar usando los lotes de R3 directamente
-produccion_combinada = Reportes.combinar_produccion_talleres(lotes_validos, taller_aliado)
-Util.mostrar_mensaje("Producción Combinada: #{inspect(produccion_combinada)}")
+    # Combinar usando los lotes de R3 directamente
+    Reportes.generar_reporte_combinacion_talleres(lotes_validos, taller_aliado)
+    |> Util.mostrar_mensaje()
   end
 end
 Programa.main()

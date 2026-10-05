@@ -603,16 +603,36 @@ defp formatear_ranking(liquidaciones, campo, orden) do
   "#{encabezado}\n#{filas}"
   end
 
-@doc """
-C.2. Recibe los lotes válidos de R3 y los combina con el mapa del taller aliado.
-"""
-def combinar_produccion_talleres(lotes_validos, taller_aliado) do
-  # Obtiene el mapa del reporte 3
-  taller_propio = obtener_produccion_diaria(lotes_validos)
+  @doc """
+  C.2. Recibe los lotes válidos de R3 y los combina con el mapa del taller aliado.
+  """
+  def combinar_produccion_talleres(lotes_validos, taller_aliado) do
+    # Obtiene el mapa del reporte 3
+    taller_propio = obtener_produccion_diaria(lotes_validos)
 
-  # Combina sumando las prendas en los días comunes
-  Map.merge(taller_propio, taller_aliado, fn _dia, prendas_t1, prendas_t2 ->
-    prendas_t1 + prendas_t2
-  end)
-end
+    # Combina sumando las prendas en los días comunes
+    Map.merge(taller_propio, taller_aliado, fn _dia, prendas_t1, prendas_t2 ->
+      prendas_t1 + prendas_t2
+    end)
+  end
+
+  @doc """
+  Genera el texto formateado de la combinación de producción de ambos talleres.
+  """
+  def generar_reporte_combinacion_talleres(lotes_validos, taller_aliado) do
+    filas_texto =
+      combinar_produccion_talleres(lotes_validos, taller_aliado)
+      |> Enum.sort() # Convierte el mapa a una lista de tuplas [{1, 1680}, {2, 1755}, ...] ordenada por día
+      |> Enum.map_join("\n", fn {dia, prendas} ->
+        "Día #{dia}: #{prendas} prendas"
+      end)
+
+    """
+    ===================================================
+    COMBINACIÓN DE PRODUCCIÓN DIARIA (TALLER PROPIO + ALIADO)
+    ===================================================
+    #{filas_texto}
+    ===================================================
+    """
+  end
 end
