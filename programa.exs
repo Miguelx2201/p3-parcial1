@@ -54,6 +54,14 @@ defmodule Programa do
       {:error, motivo} ->
         Util.mostrar_mensaje("Error al generar comprobante: #{motivo}")
     end
+
+    liquidaciones = Liquidacion.generar_liquidaciones(lotes_validos, confeccionistas)
+
+# Se ejecutan los 3 rankings requeridos en C.1
+Util.mostrar_mensaje(Reportes.ranking(liquidaciones, []))
+Util.mostrar_mensaje(Reportes.ranking(liquidaciones, campo: :prendas, limite: 3))
+Util.mostrar_mensaje(Reportes.ranking(liquidaciones, orden: :asc, campo: :bruto))
+
   end
 end
 Programa.main()
