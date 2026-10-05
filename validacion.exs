@@ -19,7 +19,7 @@ defmodule Validacion do
   Verifica que el mapa de confeccionistas tenga la clave del codigo de un cofeccionista.
   De lo contrario, devuelve el error: :confeccionista_desconocido
   """
-  defp validar_confeccionista(cod_conf, confeccionistas) do
+  def validar_confeccionista(cod_conf, confeccionistas) do
     cond do
       Map.has_key?(confeccionistas, cod_conf) -> :ok
       true -> {:error, :confeccionista_desconocido}
@@ -30,7 +30,7 @@ defmodule Validacion do
   Valida que el codigo de la linea que entra como parámetro esté dentro del mapa de lineas.
   De lo contrario, devuelve el error: :linea_desconocida
   """
-  defp validar_linea(cod_linea, lineas) do
+  def validar_linea(cod_linea, lineas) do
     cond do
       Map.has_key?(lineas, cod_linea) -> :ok
       true -> {:error, :linea_desconocida}
@@ -41,7 +41,7 @@ defmodule Validacion do
   Valida que el dia ingresado en la funcion sea un número entero del 1 al 6.
   De lo contrario, devuelve el error: :dia_invalido
   """
-  defp validar_dia(dia) do
+  def validar_dia(dia) do
     cond do
       is_integer(dia) and dia >= 1 and dia <= 6 -> :ok
       true -> {:error, :dia_invalido}
@@ -52,7 +52,7 @@ defmodule Validacion do
   Valida que el numero de prendas ingresadas sean un entero entre 1 y 180.
   De lo contrario, devuelve el error: :prendas_fuera_de_rango
   """
-  defp validar_prendas(prendas) do
+  def validar_prendas(prendas) do
     cond do
       is_integer(prendas) and prendas >= 1 and prendas <= 180 -> :ok
       true -> {:error, :prendas_fuera_de_rango}
@@ -63,7 +63,7 @@ defmodule Validacion do
   Valida que el porcenttaje de defectos ingresado sea un número de 0 a 100.
   De lo contrario, devuelve el error: :porcentaje_invalido
   """
-  defp validar_defectos(defectos) do
+  def validar_defectos(defectos) do
     cond do
       is_number(defectos) and defectos >= 0 and defectos <= 100 -> :ok
       true -> {:error, :porcentaje_invalido}
