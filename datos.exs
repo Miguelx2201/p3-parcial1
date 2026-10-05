@@ -11,8 +11,8 @@ defmodule Datos do
       %{codigo: "C08", nombre: "Pedro Morales", alquiler: true},
       %{codigo: "C09", nombre: "Sofía Castro", alquiler: false},
       %{codigo: "C10", nombre: "Mateo Ortiz", alquiler: false},
-      %{codigo: "C09", nombre: "Valentina Castillo", alquiler: false},
-      %{codigo: "C10", nombre: "Nelly Mora", alquiler: false}
+      %{codigo: "C11", nombre: "Valentina Castillo", alquiler: false},
+      %{codigo: "C12", nombre: "Nelly Mora", alquiler: false}
     ]
   end
 
