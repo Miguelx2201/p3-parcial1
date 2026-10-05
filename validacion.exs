@@ -1,4 +1,10 @@
 defmodule Validacion do
+  @moduledoc """
+  Módulo responsable de verificar la integridad y consistencia de los datos.
+  Aplica las reglas de negocio sobre los lotes registrados para filtrar inconsistencias
+  antes de procesar la liquidación o generar reportes.
+  """
+
   @doc """
   Función principal de validación: Encadena secuencialmente las 5 reglas usando with.
   Si alguna regla falla, la ejecución se detiene y retorna el primer error encontrado.

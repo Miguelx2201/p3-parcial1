@@ -1,4 +1,9 @@
 defmodule Datos do
+  @moduledoc """
+  Módulo encargado de centralizar y proveer las fuentes de datos primarias para el taller
+  de confecciones. Contiene la información de confeccionistas registrados, líneas de producción
+  disponibles y los lotes de prendas confeccionadas durante la semana.
+  """
   def confeccionistas do
     [
       %{codigo: "C01", nombre: "Miguel Gutierrez", alquiler: true},

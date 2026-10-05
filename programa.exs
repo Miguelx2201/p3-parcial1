@@ -10,6 +10,20 @@ Code.require_file("liquidacion.exs", __DIR__)
 alias Liquidacion
 
 defmodule Programa do
+  @moduledoc """
+Módulo orquestador y punto de entrada principal (`Programa`) del sistema de nómina y reportes del taller de confecciones.
+
+Coordina el flujo completo del proceso:
+  1. Carga de datos primarios (confeccionistas, líneas y lotes de producción).
+  2. Transformación de datos a estructuras eficientes de búsqueda (mapas).
+  3. Captura opcional e interactiva de un lote de producción adicional por consola.
+  4. Filtrado y separación de lotes válidos e inválidos aplicando las reglas de negocio.
+  5. Generación y visualización de los reportes primarios del taller.
+  6. Emisión interactiva de comprobantes individuales de pago por confeccionista.
+  7. Cálculo de liquidaciones semanales y ejecución del ranking de confeccionistas (Punto C.1).
+  8. Consolidación y combinación de datos de producción con el taller aliado (Punto C.2).
+"""
+
   def main do
 
     #Cargar datos crudos.
