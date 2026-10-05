@@ -60,7 +60,7 @@ defmodule Liquidacion do
   Devuelve una lista de lotes del confeccionista.
   """
   def filtrar_lotes_por_confeccionista(lotes, codigo_confeccionista) do
-    Enum.filter(lotes, fn lote -> lote.confeccionista == codigo_confeccionista end)
+    Enum.filter(lotes, fn lote -> lote.codigo_confeccionista == codigo_confeccionista end)
   end
 
   @doc """
@@ -164,4 +164,3 @@ defmodule Liquidacion do
     IO.puts("Pago neto de María Elena: $#{neto}")
   end
 end
-Liquidacion.ejecutar_ejemplo_maria()

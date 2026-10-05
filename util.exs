@@ -1,3 +1,5 @@
+Code.require_file("liquidacion.exs", __DIR__)
+alias Liquidacion
 defmodule Util do
   @moduledoc """
   Módulo de utilidades e interacción con el usuario (I/O).
@@ -125,7 +127,7 @@ defmodule Util do
         "   (No registró lotes válidos en ningún día de la semana)"
       else
         Enum.map_join(desglose_dias, "\n", fn d ->
-          "   - Día #{d.dia}: #{d.prendas} prendas | Valor Lotes: $#{formatear_moneda(d.valor_lotes)} | Bono: $#{formatear_moneda(d.bono)}"
+          "   - Día #{d.dia}: #{d.prendas} prendas | Valor Lotes: $#{formatear_numero(d.valor_lotes)} | Bono: $#{formatear_numero(d.bono)}"
         end)
       end
 
@@ -141,11 +143,11 @@ defmodule Util do
     #{filas_dias}
 
     ------------------------------------------------------------
-    Suma de Lotes:          $#{formatear_moneda(suma_lotes)}
-    Suma de Bonificaciones: $#{formatear_moneda(suma_bonos)}
-    Descuento por Alquiler: -$#{formatear_moneda(descuento_alquiler)}
+    Suma de Lotes:          $#{formatear_numero(suma_lotes)}
+    Suma de Bonificaciones: $#{formatear_numero(suma_bonos)}
+    Descuento por Alquiler: -$#{formatear_numero(descuento_alquiler)}
     ------------------------------------------------------------
-    PAGO NETO TOTAL:        $#{formatear_moneda(neto)}
+    PAGO NETO TOTAL:        $#{formatear_numero(neto)}
     ============================================================
     """)
     {:ok, mensaje}
@@ -155,11 +157,11 @@ defmodule Util do
   Formatea un monto numérico (entero o flotante) con exactamente 2 decimales.
   Evita notación científica.
   """
-  def formatear_moneda(monto) when is_integer(monto) do
+  def formatear_numero(monto) when is_integer(monto) do
     :erlang.float_to_binary(monto * 1.0, decimals: 2)
   end
 
-  def formatear_moneda(monto) when is_float(monto) do
+  def formatear_numero(monto) when is_float(monto) do
     :erlang.float_to_binary(monto, decimals: 2)
   end
 
