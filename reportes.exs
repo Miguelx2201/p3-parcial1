@@ -142,14 +142,9 @@ end
   verificando la meta de 600 prendas diarias, e informando si se alcanzó la meta
   al menos un día y si se logró todos los días.
   """
-    # 1. Agrupar y sumar las prendas por día directamente en un mapa
-    prendas_por_dia_mapa =
-      lotes_validos
-      |> Enum.group_by(fn lote -> lote.dia end)
-      |> Enum.map(fn {dia, lotes_dia} ->
-        {dia, Enum.sum_by(lotes_dia, fn lote -> lote.prendas end)}
-      end)
-      |> Enum.into(%{})
+def generar_reporte_r3(lotes_validos) do
+  # 1. Obtenemos el mapa con la función auxiliar
+  prendas_por_dia_mapa = obtener_produccion_diaria(lotes_validos)
 
   # 2. Iterar del día 1 al 6 para no omitir días con 0 prendas
   produccion_diaria =
@@ -169,10 +164,10 @@ end
       "  - Día #{dia.dia}: #{dia.total_prendas} prendas | Alcanzó meta (600): #{estado}"
     end)
 
-    """
-    ===================================================
-    REPORTE #3 - PRODUCCIÓN DIARIA Y METAS DEL TALLER
-    ===================================================
+  """
+  ===================================================
+  REPORTE #3 - PRODUCCIÓN DIARIA Y METAS DEL TALLER
+  ===================================================
 
   #{filas_texto}
 
