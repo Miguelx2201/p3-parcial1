@@ -163,4 +163,25 @@ defmodule Liquidacion do
     neto = calcular_neto_semanal(lotes, confeccionista)
     IO.puts("Pago neto de María Elena: $#{neto}")
   end
+
+  @doc """
+Genera la lista consolidada de liquidaciones para todos los confeccionistas.
+Devuelve una lista de mapas con las métricas necesarias para reportes y rankings:
+:codigo, :nombre, :bruto, :neto y :prendas.
+"""
+def generar_liquidaciones(lotes_validos, mapa_confeccionistas) do
+  mapa_confeccionistas
+  |> Map.values()
+  |> Enum.map(fn confeccionista ->
+    lotes_conf = filtrar_lotes_por_confeccionista(lotes_validos, confeccionista.codigo)
+
+    %{
+      codigo: confeccionista.codigo,
+      nombre: confeccionista.nombre,
+      bruto: calcular_total_semanal(lotes_validos, confeccionista),
+      neto: calcular_neto_semanal(lotes_validos, confeccionista),
+      prendas: Enum.sum_by(lotes_conf, fn lote -> lote.prendas end)
+    }
+    end)
+  end
 end

@@ -522,4 +522,56 @@ defmodule Reportes do
     )
   end
 
+@doc """
+C.1. Genera un ranking configurable de confeccionistas.
+Opciones:
+  - :campo  -> :neto (predeterminado), :prendas o :bruto
+  - :orden  -> :desc (predeterminado) o :asc
+  - :limite -> entero positivo (por defecto muestra todos)
+"""
+def ranking(liquidaciones, opciones \\ []) do
+  campo = Keyword.get(opciones, :campo, :neto)
+  orden = Keyword.get(opciones, :orden, :desc)
+  limite = Keyword.get(opciones, :limite, nil)
+
+  # 1. Ordenar la lista según el campo y orden solicitado
+  liquidaciones_ordenadas =
+    Enum.sort_by(
+      liquidaciones,
+      fn liq -> Map.get(liq, campo, 0) end,
+      if(orden == :asc, do: :asc, else: :desc)
+    )
+
+  # 2. Aplicar el límite si fue especificado
+  resultado =
+    if is_integer(limite) and limite > 0 do
+      Enum.take(liquidaciones_ordenadas, limite)
+    else
+      liquidaciones_ordenadas
+    end
+
+  # 3. Retornar el texto formateado
+  formatear_ranking(resultado, campo, orden)
+end
+
+# Función auxiliar para dar formato de texto al ranking
+defp formatear_ranking(liquidaciones, campo, orden) do
+  encabezado = "\n=== RANKING DE CONFECCIONISTAS (Campo: #{campo} | Orden: #{orden}) ==="
+
+  filas =
+    Enum.map_join(liquidaciones, "\n", fn liq ->
+      valor = Map.get(liq, campo, 0)
+
+      valor_str =
+        if campo == :prendas do
+          "#{valor} prendas"
+        else
+          "$#{Util.formatear_numero(valor)}"
+        end
+
+      "Confeccionista: #{liq.nombre} (#{liq.codigo}) -> #{campo}: #{valor_str}"
+    end)
+
+  "#{encabezado}\n#{filas}"
+  end
 end
