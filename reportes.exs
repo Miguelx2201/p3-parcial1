@@ -1,6 +1,6 @@
-Code.require_file("liquidacion.exs")
+Code.require_file("liquidacion.exs", __DIR__)
 alias Liquidacion
-Code.require_file("util.exs")
+Code.require_file("util.exs", __DIR__)
 alias Util
 
 defmodule Reportes do
