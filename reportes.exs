@@ -125,54 +125,58 @@ defmodule Reportes do
     """
   end
 
-  @doc """
-  Genera e imprime el Reporte R3: Prendas producidas en cada uno de los 6 días,
+# Función auxiliar (Reutilizada por R3 y C.2)
+@doc """
+Calcula el mapa de producción diaria a partir de lotes válidos.
+"""
+def obtener_produccion_diaria(lotes_validos) do
+  lotes_validos
+  |> Enum.group_by(fn lote -> lote.dia end)
+  |> Enum.map(fn {dia, lotes_dia} ->
+    {dia, Enum.sum_by(lotes_dia, fn lote -> lote.prendas end)}
+  end)
+  |> Enum.into(%{})
+end
+@doc """
+  Genera el Reporte R3: Prendas producidas en cada uno de los 6 días,
   verificando la meta de 600 prendas diarias, e informando si se alcanzó la meta
   al menos un día y si se logró todos los días.
   """
-  def generar_reporte_r3(lotes_validos) do
-    # 1. Agrupar y sumar las prendas por día directamente en un mapa
-    prendas_por_dia_mapa =
-      lotes_validos
-      |> Enum.group_by(fn lote -> lote.dia end)
-      |> Enum.map(fn {dia, lotes_dia} ->
-        {dia, Enum.sum_by(lotes_dia, fn lote -> lote.prendas end)}
-      end)
-      |> Enum.into(%{})
+def generar_reporte_r3(lotes_validos) do
+  # 1. Obtenemos el mapa con la función auxiliar
+  prendas_por_dia_mapa = obtener_produccion_diaria(lotes_validos)
 
-    # 2. Iterar del día 1 al 6 para no omitir días con 0 prendas
-    produccion_diaria =
-      for dia <- 1..6 do
-        total_prendas = Map.get(prendas_por_dia_mapa, dia, 0)
-        cumple_meta = total_prendas >= 600
+  # 2. Iterar del día 1 al 6 para no omitir días con 0 prendas
+  produccion_diaria =
+    for dia <- 1..6 do
+      total_prendas = Map.get(prendas_por_dia_mapa, dia, 0)
+      cumple_meta = total_prendas >= 600
 
-        %{dia: dia, total_prendas: total_prendas, cumple_meta: cumple_meta}
-      end
+      %{dia: dia, total_prendas: total_prendas, cumple_meta: cumple_meta}
+    end
 
-    # 3. Evaluaciones globales sobre los 6 días
-    alcanzo_al_menos_un_dia = Enum.any?(produccion_diaria, fn dia -> dia.cumple_meta end)
-    alcanzo_todos_los_dias = Enum.all?(produccion_diaria, fn dia -> dia.cumple_meta end)
+  alcanzo_al_menos_un_dia = Enum.any?(produccion_diaria, fn dia -> dia.cumple_meta end)
+  alcanzo_todos_los_dias = Enum.all?(produccion_diaria, fn dia -> dia.cumple_meta end)
 
-    # 4. Formatear las líneas de texto
-    filas_texto =
-      Enum.map_join(produccion_diaria, "\n", fn dia ->
-        estado = if dia.cumple_meta, do: "SÍ (Meta alcanzada)", else: "NO"
-        "  - Día #{dia.dia}: #{dia.total_prendas} prendas | Alcanzó meta (600): #{estado}"
-      end)
+  filas_texto =
+    Enum.map_join(produccion_diaria, "\n", fn dia ->
+      estado = if dia.cumple_meta, do: "SÍ (Meta alcanzada)", else: "NO"
+      "  - Día #{dia.dia}: #{dia.total_prendas} prendas | Alcanzó meta (600): #{estado}"
+    end)
 
-    """
-    ===================================================
-    REPORTE #3 - PRODUCCIÓN DIARIA Y METAS DEL TALLER
-    ===================================================
+  """
+  ===================================================
+  REPORTE #3 - PRODUCCIÓN DIARIA Y METAS DEL TALLER
+  ===================================================
 
-    #{filas_texto}
+  #{filas_texto}
 
-    ---------------------------------------------------
-    ¿Se alcanzó la meta de 600 prendas al menos un día?: #{Util.formatear_booleano(alcanzo_al_menos_un_dia)}
-    ¿Se alcanzó la meta de 600 prendas todos los días?: #{Util.formatear_booleano(alcanzo_todos_los_dias)}
-    ===================================================
-    """
-  end
+  ---------------------------------------------------
+  ¿Se alcanzó la meta de 600 prendas al menos un día?: #{Util.formatear_booleano(alcanzo_al_menos_un_dia)}
+  ¿Se alcanzó la meta de 600 prendas todos los días?: #{Util.formatear_booleano(alcanzo_todos_los_dias)}
+  ===================================================
+  """
+end
 
   @doc """
   Genera e imprime el Reporte R4: Liquidación de todos los confeccionistas,
@@ -597,5 +601,38 @@ defp formatear_ranking(liquidaciones, campo, orden) do
     end)
 
   "#{encabezado}\n#{filas}"
+  end
+
+  @doc """
+  C.2. Recibe los lotes válidos de R3 y los combina con el mapa del taller aliado.
+  """
+  def combinar_produccion_talleres(lotes_validos, taller_aliado) do
+    # Obtiene el mapa del reporte 3
+    taller_propio = obtener_produccion_diaria(lotes_validos)
+
+    # Combina sumando las prendas en los días comunes
+    Map.merge(taller_propio, taller_aliado, fn _dia, prendas_t1, prendas_t2 ->
+      prendas_t1 + prendas_t2
+    end)
+  end
+
+  @doc """
+  Genera el texto formateado de la combinación de producción de ambos talleres.
+  """
+  def generar_reporte_combinacion_talleres(lotes_validos, taller_aliado) do
+    filas_texto =
+      combinar_produccion_talleres(lotes_validos, taller_aliado)
+      |> Enum.sort() # Convierte el mapa a una lista de tuplas [{1, 1680}, {2, 1755}, ...] ordenada por día
+      |> Enum.map_join("\n", fn {dia, prendas} ->
+        "Día #{dia}: #{prendas} prendas"
+      end)
+
+    """
+    ===================================================
+    COMBINACIÓN DE PRODUCCIÓN DIARIA (TALLER PROPIO + ALIADO)
+    ===================================================
+    #{filas_texto}
+    ===================================================
+    """
   end
 end

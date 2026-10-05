@@ -27,7 +27,7 @@ defmodule Datos do
 
   def lotes do
     # 1. Lotes invalidos (2 por cada motivo)
-    lotes_invalidos = [
+     [
       # Regla 1: Confeccionista desconocido
       %{codigo_confeccionista: "C99", linea: "L1", dia: 1, prendas: 80, defectos: 1.0},
       %{codigo_confeccionista: "C88", linea: "L2", dia: 2, prendas: 60, defectos: 2.0},
@@ -42,11 +42,9 @@ defmodule Datos do
       %{codigo_confeccionista: "C04", linea: "L2", dia: 4, prendas: 200, defectos: 2.0},
       # Regla 5: Porcentaje de defectos inválido (< 0 o > 100)
       %{codigo_confeccionista: "C02", linea: "L2", dia: 5, prendas: 110, defectos: -1.0},
-      %{codigo_confeccionista: "C05", linea: "L3", dia: 6, prendas: 85, defectos: 105.0}
-    ]
+      %{codigo_confeccionista: "C05", linea: "L3", dia: 6, prendas: 85, defectos: 105.0},
 
     # 2. Lotes validos (80 lotes distribuidos en los 6 días)
-    lotes_validos = [
       # --- DÍA 1 (Total: 620 prendas -> Cumple meta de 600) ---
       %{codigo_confeccionista: "C01", linea: "L1", dia: 1, prendas: 70, defectos: 1.5},  # María (Ejemplo parcial)
       %{codigo_confeccionista: "C01", linea: "L2", dia: 1, prendas: 55, defectos: 7.0},  # María (Ejemplo parcial)
@@ -157,11 +155,6 @@ defmodule Datos do
       %{codigo_confeccionista: "C11", linea: "L1", dia: 6, prendas: 95, defectos: 1.0}
     ]
 
-    #Antes se tenia de esta manera [lotes_validos|lotes_invalidos]
-    # pero se descubrio que retorna una lista de listas; [lotes_validos, lotes_invalidos] y no una lista plana de lotes.
-    # Entonces se usa la siguiente forma pero con los lotes invalidos primero, asi esa accion tendra complejidad computacional
-    # O(10) ya que la lista de lotes invalidos es de longitud 10
-    lotes_invalidos ++ lotes_validos
   end
 
 end
