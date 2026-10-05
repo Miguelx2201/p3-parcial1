@@ -24,9 +24,13 @@ defmodule Util do
   - :omitido si el usuario presiona Enter sin escribir nada.
   """
   def solicitar_lote_adicional do
-    IO.puts("\n" <> String.duplicate("-", 60))
+    IO.puts("\n" <> String.duplicate("=", 60))
     input =
-      IO.gets("Ingrese un lote adicional (confeccionista;linea;dia;prendas;defectos) o Enter para omitir: ")
+      IO.gets("""
+      Ingrese un lote adicional (confeccionista;linea;dia;prendas;defectos)
+      EJEMPLO: C01;L1;1;100;1
+      o presione Enter para omitir:
+      """)
       |> String.trim()
 
     if input == "" do
@@ -47,10 +51,10 @@ defmodule Util do
       [confeccionista, linea, dia_str, prendas_str, defectos_str] ->
         with {dia, ""} <- Integer.parse(dia_str),
              {prendas, ""} <- Integer.parse(prendas_str),
-             {defectos, ""} <- parsear_numero(defectos_str) do
+             {:ok, defectos} <- parsear_numero(defectos_str) do
 
           lote = %{
-            confeccionista: confeccionista,
+            codigo_confeccionista: confeccionista,
             linea: linea,
             dia: dia,
             prendas: prendas,
@@ -167,10 +171,11 @@ defmodule Util do
 
   # Auxiliar para parsear floats o enteros ingresados en la consola
   defp parsear_numero(string) do
-    case Float.parse(string) do
+    cadena = string |> String.replace(",", ".") #No importa si el usuario usa , o . va parsear igualmente.
+    case Float.parse(cadena) do
       {num, ""} -> {:ok, num}
       _error ->
-        case Integer.parse(string) do
+        case Integer.parse(cadena) do
           {num, ""} -> {:ok, num * 1.0}
           _error -> :error
         end
