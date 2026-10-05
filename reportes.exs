@@ -248,7 +248,12 @@ end
   ocupó el primer lugar más días y cuántos; si hay empate, se incluyen todos los empatados.
   """
   def generar_reporte_r5(lotes_validos, mapa_confeccionistas) do
-    encabezado = "\nR5. Confeccionista(s) con mas prendas por día:"
+    linea = "==================================================="
+    encabezado = """
+    #{linea}
+    REPORTE #5 - CONFECCIONISTA(S) CON MÁS PRENDAS POR DÍA:
+    #{linea}
+    """
 
     resultados_dias =
       for dia <- 1..6 do
@@ -259,7 +264,7 @@ end
     lineas_dias = Enum.map_join(resultados_dias, "\n", fn {_codigos, mensaje} -> mensaje end)
     resumen = obtener_resumen_general(ganadores_por_dia, mapa_confeccionistas)
 
-    Enum.join([encabezado, lineas_dias, resumen], "\n")
+    Enum.join([encabezado, lineas_dias, resumen, linea], "\n")
   end
 
   # Funciones auxiliares para el reporte 5
@@ -355,7 +360,13 @@ end
       |> calcular_calidad_candidatos()
       |> mostrar_ganador_calidad(mapa_confeccionistas)
 
-    "\nR6. Confeccionista con mejor calidad\n#{resultado}"
+    """
+    ===================================================
+    REPORTE #6 - CONFECCIONISTA CON MEJOR CALIDAD (MENOR % DEFECTOS PONDERADO):
+    ===================================================
+    #{resultado}
+    ===================================================
+    """
   end
 
   # Funciones auxiliares para el reporte 6
@@ -421,7 +432,15 @@ end
     total_prendas = calcular_total_prendas_validas(lotes_validos)
     promedio_texto = calcular_y_formatear_promedio(total_pagado, total_prendas)
 
-    "\nR7. Total semanal del taller y costo promedio por prenda\nTotal a pagar por el taller: $#{Util.formatear_numero(total_pagado)}\nTotal prendas válidas: #{total_prendas}\n#{promedio_texto}"
+    """
+    ===================================================
+    REPORTE #7 - TOTAL SEMANAL DEL TALLER Y COSTO PROMEDIO POR PRENDA VÁLIDA:
+    ===================================================
+    Total a pagar por el taller: $#{Util.formatear_numero(total_pagado)}
+    Total prendas válidas: #{total_prendas}
+    #{promedio_texto}
+    ===================================================
+    """
   end
 
   # Funciones auxiliares para el reporte 7
@@ -469,7 +488,12 @@ end
       |> filtrar_confeccionistas_todas_las_lineas(lineas_totales)
       |> formatear_resultado_r8(mapa_confeccionistas)
 
-    "\nR8. Confeccionistas con lotes válidos en todas las líneas\n#{resultado}"
+    """
+    ===================================================
+    REPOTE #8 - CONFECCIONISTAS CON LOTES VÁLIDOS EN TODAS LAS LÍNEAS
+    #{resultado}
+    ===================================================
+    """
   end
 
   # Funciones auxiliares para el reporte 8
