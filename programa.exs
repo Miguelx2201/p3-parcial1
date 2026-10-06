@@ -1,14 +1,3 @@
-Code.require_file("datos.exs", __DIR__)
-alias Datos
-Code.require_file("util.exs", __DIR__)
-alias Util
-Code.require_file("validacion.exs", __DIR__)
-alias Validacion
-Code.require_file("reportes.exs", __DIR__)
-alias Reportes
-Code.require_file("liquidacion.exs", __DIR__)
-alias Liquidacion
-
 defmodule Programa do
   @moduledoc """
 Módulo orquestador y punto de entrada principal (`Programa`) del sistema de nómina y reportes del taller de confecciones.
