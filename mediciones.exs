@@ -1,6 +1,3 @@
-Code.require_file("util.exs", __DIR__)
-alias Util
-
 defmodule Mediciones do
   @moduledoc """
   Módulo de pruebas de rendimientoy análisis de eficiencia algorítmica.
